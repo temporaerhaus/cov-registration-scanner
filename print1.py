@@ -10,7 +10,7 @@ p = Serial('/dev/ttyUSB0', 19200)
 
 
 vcard = " ".join(sys.argv[1:])
-regex = r"000026BEGIN:VCARDVERSION:4\.0N:.+;.+;.+FN:(.+?)BDAY:.*EMAIL;TYPE=home:(.+?)TEL;TYPE=.+?:(.+?)ADR;TYPE=home:(.*?);(.*?);(.*?);(.*?);(.*?);(.*?)REV:.*"
+regex = r"BEGIN:VCARDVERSION:4\.0N:.+;.+;.+FN:(.+?)BDAY:.*EMAIL;TYPE=home:(.*?)TEL;TYPE=.+?:(.+?)ADR;TYPE=home:(.*?);(.*?);(.*?);(.*?);(.*?);(.*?)REV:.*"
 subst = "\\1\\n\\2\\n\\3\\n\\6, \\9 \\7"
 
 now = datetime.datetime.now()
