@@ -11,5 +11,3 @@ while(true):
     if(data!=''):
         print2.printR(data)
         time.sleep(5)
-    
-    
