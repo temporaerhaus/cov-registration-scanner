@@ -27,18 +27,19 @@ match = re.search(regex, vcard)
 if match:
     printtext = re.sub(regex, subst, vcard)
 elif vcard.startswith("HC1:"):
-    vacdata = json.loads(cbor2.loads(cbor2.loads(zlib.decompress(
-        base45.b45decode(vcard.replace("HC1:", ""))))).value[2])
+    vd = cbor2.loads(zlib.decompress(
+        base45.b45decode(vcard.replace("HC1:", ""))))
+   vacdata=cbor2.loads(vd.value[2])
     print(vacdata)
     print(vacdata["-260"]["dob"] + "\n" + vacdata["-260"]
           ["nam"]["gn"] + " " + vacdata["-260"]["nam"]["fn"])
 else:
-    #printtext = vcard
+    # printtext = vcard
     printtext = "\n\n__________________________________\nName\n\n__________________________________\nTelefon\n\n__________________________________\nStrasse\n\n__________________________________\nOrt"
 p.text(str(now))
 p.text("\n")
 p.text(printtext)
-#p.text("\n\n__________________________________\nCheckout Uhrzeit")
+# p.text("\n\n__________________________________\nCheckout Uhrzeit")
 p.cut()
 
 p.text("\x1b\x40\x1b\x61\x01")  # initialize, align center
