@@ -31,8 +31,8 @@ elif vcard.startswith("HC1:"):
         base45.b45decode(vcard.replace("HC1:", ""))))
     vacdata = cbor2.loads(vd.value[2])
     print(vacdata)
-    print(vacdata["-260"]["dob"] + "\n" + vacdata["-260"]
-          ["nam"]["gn"] + " " + vacdata["-260"]["nam"]["fn"])
+    print(vacdata[-260]["dob"] + "\n" + vacdata[-260]
+          ["nam"]["gn"] + " " + vacdata[-260]["nam"]["fn"])
 else:
     # printtext = vcard
     printtext = "\n\n__________________________________\nName\n\n__________________________________\nTelefon\n\n__________________________________\nStrasse\n\n__________________________________\nOrt"
