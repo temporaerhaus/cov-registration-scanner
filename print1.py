@@ -6,6 +6,7 @@ import datetime
 import cbor2
 import base45
 import zlib
+import json
 from escpos.printer import *
 # from escpos.constants import *
 
@@ -26,9 +27,11 @@ match = re.search(regex, vcard)
 if match:
     printtext = re.sub(regex, subst, vcard)
 elif vcard.startswith("HC1:"):
-    vacdata = cbor2.loads(zlib.decompress(
-        base45.b45decode(vcard.replace("HC1:", ""))))
-    print(cbor2.loads(vacdata.value[2]))
+    vacdata = json.loads(cbor2.loads(cbor2.loads(zlib.decompress(
+        base45.b45decode(vcard.replace("HC1:", ""))))).value[2])
+    print(vacdata)
+    print(vacdata["-260"]["dob"] + "\n" + vacdata["-260"]
+          ["nam"]["gn"] + " " + vacdata["-260"]["nam"]["fn"])
 else:
     #printtext = vcard
     printtext = "\n\n__________________________________\nName\n\n__________________________________\nTelefon\n\n__________________________________\nStrasse\n\n__________________________________\nOrt"
