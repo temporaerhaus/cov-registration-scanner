@@ -29,7 +29,7 @@ if match:
 elif vcard.startswith("HC1:"):
     vd = cbor2.loads(zlib.decompress(
         base45.b45decode(vcard.replace("HC1:", ""))))
-   vacdata=cbor2.loads(vd.value[2])
+    vacdata = cbor2.loads(vd.value[2])
     print(vacdata)
     print(vacdata["-260"]["dob"] + "\n" + vacdata["-260"]
           ["nam"]["gn"] + " " + vacdata["-260"]["nam"]["fn"])
