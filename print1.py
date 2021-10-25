@@ -36,6 +36,16 @@ elif vcard.startswith("HC1:"):
 else:
     # printtext = vcard
     printtext = "\n\n__________________________________\nName\n\n__________________________________\nTelefon\n\n__________________________________\nStrasse\n\n__________________________________\nOrt"
+
+printtext.replace("Ä","Ae")
+printtext.replace("Ö","Öe")
+printtext.replace("Ü","Üe")
+printtext.replace("ẞ","SS")
+printtext.replace("ä","ae")
+printtext.replace("ö","oe")
+printtext.replace("ü","ue")
+printtext.replace("ß","ss")
+
 p.text(str(now))
 p.text("\n")
 p.text(printtext)
