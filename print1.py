@@ -26,6 +26,7 @@ if("successfulParse" not in countDict[h]):
     countDict[h]["vacCertParse"] = 0
 
 vcard = " ".join(sys.argv[1:])
+print(vcard)
 regex = r"BEGIN:VCARDVERSION:4\.0N:.+;.+;.+FN:(.+?)BDAY:.*EMAIL;TYPE=home:(.*?)TEL;TYPE=.+?:(.+?)ADR;TYPE=home:(.*?);(.*?);(.*?);(.*?);(.*?);(.*?)REV:.*"
 subst = "\\1\\n\\2\\n\\3\\n\\6, \\9 \\7"
 
