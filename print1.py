@@ -10,9 +10,6 @@ import json
 from escpos.printer import *
 # from escpos.constants import *
 
-import decodeAndVerify
-
-
 p = Serial('/dev/ttyUSB0', 19200)
 
 countFile = open('countFile.json', 'r')
