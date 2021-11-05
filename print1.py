@@ -45,12 +45,11 @@ elif vcard.startswith("HC1:"):
     printtext = vacdata[-260][1]["dob"] + "\n" + vacdata[-260][1]["nam"]["gn"] + " " + vacdata[-260][1]["nam"]["fn"] + \
         "\n\n__________________________________\nTelefon\n\n__________________________________\nStrasse\n\n__________________________________\nOrt"
     countDict[h]["vacCertParse"] += 1
+elif vcard == "stats":
+    printtext = json.dumps(countDict, sort_keys=True, indent=4)
 elif len(vcard) > 3:
     countDict[h]["unsuccessfulParse"] += 1
     printtext = "\n\n__________________________________\nName\n\n__________________________________\nTelefon\n\n__________________________________\nStrasse\n\n__________________________________\nOrt"
-
-elif vcard == "stats":
-    printtext = json.dumps(countDict, sort_keys=True, indent=4)
 else:
     # printtext = vcard
     printtext = "\n\n__________________________________\nName\n\n__________________________________\nTelefon\n\n__________________________________\nStrasse\n\n__________________________________\nOrt"
