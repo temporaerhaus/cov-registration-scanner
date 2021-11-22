@@ -27,18 +27,24 @@ if("successfulParse" not in countDict[h]):
 
 vcard = " ".join(sys.argv[1:])
 print(vcard)
-regex = r"BEGIN:VCARDVERSION:4\.0N:.+;.+;.+FN:(.+?)BDAY:.*EMAIL;TYPE=home:(.*?)TEL;TYPE=.+?:(.+?)ADR;TYPE=home:(.*?);(.*?);(.*?);(.*?);(.*?);(.*?)REV:.*"
-subst = "\\1\\n\\2\\n\\3\\n\\6, \\9 \\7"
+
+getMatch = lambda x : (lambda m : m[1] if (m is not None) else "")(re.search(x, vcard))
+
+vcname = getMatch("FN:(.+?)BDAY:")
+vcmail = getMatch("EMAIL;TYPE=home:(.*?)TEL;")
+vctel = getMatch("TEL;TYPE=.+?:(.*?)ADR;")
+vcaddr = (lambda m : "{}, {} {}".format(m[3], m[6], m[4]) if (m is not None) else "")(re.search("ADR;TYPE=home:(.*?);(.*?);(.*?);(.*?);(.*?);(.*?)REV:", vcard))
 
 now = datetime.datetime.now()
 
 p.set()                # reset font size
 p.text("\x1b\x61\x00")  # align left
 
-match = re.search(regex, vcard)
-
-if match:
-    printtext = re.sub(regex, subst, vcard)
+if (vctel == "") and (vcmail == ""):
+    printtext = "Es muss entweder eine Telefonnummer oder eine E-Mail Adresse angegeben werden.\n\n{}\n\n__________________________________\nTelefon\n\n{}".format(vcname, vcaddr)
+    countDict[h]["unsuccessfulParse"] += 1
+elif (vcname != "") and (vcaddr != ""):
+    printtext = ("{0}\n{1}\n{3}" if (vctel == "") else ("{0}\n{2}\n{3}" if (vcmail == "") else "{}\n{} {}\n{}")).format(vcname, vcmail, vctel, vcaddr)
     countDict[h]["successfulParse"] += 1
 elif vcard.startswith("HC1:"):
     decodeAndVerify.decodeVacCert(vcard)
