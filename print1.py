@@ -3,12 +3,10 @@
 import sys
 import re
 import datetime
-import cbor2
-import base45
-import zlib
 import json
 from escpos.printer import *
 # from escpos.constants import *
+from verifyVac import verify as verifyVac
 
 p = Serial('/dev/ttyUSB0', 19200)
 
@@ -47,10 +45,14 @@ elif (vcname != "") and (vcaddr != ""):
     printtext = ("{0}\n{1}\n{3}" if (vctel == "") else ("{0}\n{2}\n{3}" if (vcmail == "") else "{}\n{} {}\n{}")).format(vcname, vcmail, vctel, vcaddr)
     countDict[h]["successfulParse"] += 1
 elif vcard.startswith("HC1:"):
-    decodeAndVerify.decodeVacCert(vcard)
-    printtext = vacdata[-260][1]["dob"] + "\n" + vacdata[-260][1]["nam"]["gn"] + " " + vacdata[-260][1]["nam"]["fn"] + \
-        "\n\n__________________________________\nTelefon\n\n__________________________________\nStrasse\n\n__________________________________\nOrt"
-    countDict[h]["vacCertParse"] += 1
+    vac = verifyVac(vcard)
+    if vac["valid"]:
+        printtext = vac["data"]["name"] + \
+            "\n\n__________________________________\nTelefon\n\n__________________________________\nStrasse\n\n__________________________________\nOrt"
+        countDict[h]["vacCertParse"] += 1
+    else:
+        printtext = vac["data"] + "\n\n__________________________________\nName\n\n__________________________________\nTelefon\n\n__________________________________\nStrasse\n\n__________________________________\nOrt"
+        countDict[h]["unsuccessfulParse"] += 1
 elif vcard == "stats":
     printtext = json.dumps(countDict, sort_keys=True, indent=4)
 elif len(vcard) > 3:
