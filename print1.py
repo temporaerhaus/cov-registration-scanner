@@ -64,11 +64,15 @@ elif vcard == "stats":
     printtext = ''
     parser = argparse.ArgumentParser(
         description='decides, what and how many stats are printed')
-    parser.add_argument('-d', '--daily', help='print the daily stats')
-    parser.add_argument('-w', '--weekly', help='print the weekly stats')
-    parser.add_argument('-m', '--monthly', help='print the monthly stats')
-    parser.add_argument('-a', '--all', help='print all stats (very large)')
-    args = parser.parse_args(vcard[6:])
+    parser.add_argument(
+        '-d', '--daily', help='print the daily stats', action='store_true')
+    parser.add_argument(
+        '-w', '--weekly', help='print the weekly stats', action='store_true')
+    parser.add_argument('-m', '--monthly',
+                        help='print the monthly stats', action='store_true')
+    parser.add_argument(
+        '-a', '--all', help='print all stats (very large)', action='store_true')
+    args = parser.parse_args([vcard[6:]])
     if args.all:
         printtext += json.dumps(countDict, sort_keys=True, indent=4)
     if args.daily:
@@ -76,7 +80,7 @@ elif vcard == "stats":
         printtext += json.dumps(countDict[h], sort_keys=True, indent=4)
     if args.weekly:
         printtext += ("\nKW: " +
-                      datetime.date.today().isocalendar().week + "\n")
+                      str(datetime.date.today().isocalendar().week) + "\n")
         for day in countDict.keys():
             if datetime.date.fromisoformat(day).isocalendar().week == datetime.date.today().isocalendar().week:
                 sum = 0
