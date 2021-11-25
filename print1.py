@@ -1,5 +1,6 @@
 # coding=<utf-8>
 
+from escpos.printer import *
 import sys
 import re
 import datetime
@@ -7,7 +8,7 @@ import cbor2
 import base45
 import zlib
 import json
-from escpos.printer import *
+import argparse
 # from escpos.constants import *
 
 p = Serial('/dev/ttyUSB0', 19200)
@@ -27,7 +28,7 @@ if("successfulParse" not in countDict[h]):
 
 vcard = " ".join(sys.argv[1:])
 print(vcard)
-regex = r"BEGIN:VCARDVERSION:4\.0N:.+;.+;.+FN:(.+?)BDAY:.*EMAIL;TYPE=home:(.*?)TEL;TYPE=.+?:(.+?)ADR;TYPE=home:(.*?);(.*?);(.*?);(.*?);(.*?);(.*?)REV:.*"
+regex = r"BEGIN:VCARDVERSION:4\.0N:.+;.+;.+FN:(.+?)BDAY:.*EMAIL;TYPE=home:(.*?)TEL;TYPE=.+?:(.*?)ADR;TYPE=home:(.*?);(.*?);(.*?);(.*?);(.*?);(.*?)REV:.*"
 subst = "\\1\\n\\2\\n\\3\\n\\6, \\9 \\7"
 
 now = datetime.datetime.now()
@@ -37,7 +38,7 @@ p.text("\x1b\x61\x00")  # align left
 
 match = re.search(regex, vcard)
 
-if match:
+if match and ((match.group(2) != '') and (match.group(3) != '')):
     printtext = re.sub(regex, subst, vcard)
     countDict[h]["successfulParse"] += 1
 elif vcard.startswith("HC1:"):
@@ -45,8 +46,30 @@ elif vcard.startswith("HC1:"):
     printtext = vacdata[-260][1]["dob"] + "\n" + vacdata[-260][1]["nam"]["gn"] + " " + vacdata[-260][1]["nam"]["fn"] + \
         "\n\n__________________________________\nTelefon\n\n__________________________________\nStrasse\n\n__________________________________\nOrt"
     countDict[h]["vacCertParse"] += 1
-elif vcard == "stats":
-    printtext = json.dumps(countDict, sort_keys=True, indent=4)
+elif vcard.startswith("stats"):
+    printtext = ''
+    parser = argparse.ArgumentParser(
+        description='decides, what and how many stats are printed')
+    parser.add_argument('-d', '--daily', help='print the daily stats')
+    parser.add_argument('-w', '--weekly', help='print the weekly stats')
+    parser.add_argument('-m', '--monthly', help='print the monthly stats')
+    parser.add_argument('-a', '--all', help='print all stats (very large)')
+    args = parser.parse_args(vcard[6:])
+    if args.all:
+        printtext += json.dumps(countDict, sort_keys=True, indent=4)
+    if args.daily:
+        printtext += ("\n" + h + "\n")
+        printtext += json.dumps(countDict[h], sort_keys=True, indent=4)
+    if args.weekly:
+        printtext += ("\nKW: " +
+                      datetime.date.today().isocalendar().week + "\n")
+        for day in countDict.keys():
+            if datetime.date.fromisoformat(day).isocalendar().week == datetime.date.today().isocalendar().week:
+                sum = 0
+                for i in (countDict[day]).values():
+                    sum += i
+                printext += day + ": " + str(i) + "\n"
+
 elif len(vcard) > 3:
     countDict[h]["unsuccessfulParse"] += 1
     printtext = "\n\n__________________________________\nName\n\n__________________________________\nTelefon\n\n__________________________________\nStrasse\n\n__________________________________\nOrt"
