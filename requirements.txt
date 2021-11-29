@@ -5,3 +5,4 @@ escpos>=1.9
 numpy>=1.19.5
 pyzbar>=0.1.8
 vobject>=0.9.6.1
+matplotlib>=3.5.0

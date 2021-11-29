@@ -8,6 +8,7 @@ import json
 import argparse
 # from escpos.constants import *
 from verifyVac import verify as verifyVac
+from matplotlib import pyplot as plt
 
 p = Serial('/dev/ttyUSB0', 19200)
 
@@ -83,10 +84,22 @@ elif vcard == "stats":
                       str(datetime.date.today().isocalendar().week) + "\n")
         for day in countDict.keys():
             if datetime.date.fromisoformat(day).isocalendar().week == datetime.date.today().isocalendar().week:
-                sum = 0
+                s = 0
                 for i in (countDict[day]).values():
-                    sum += i
+                    s += i
                 printext += day + ": " + str(i) + "\n"
+    if args.monthly:
+        people = {}
+        for day in countDict.keys():
+            if datetime.date.fromisoformat(day).month == datetime.date.today().month:
+                s = 0
+                for i in (countDict[day]).values():
+                    s += i
+                people[datetime.date.fromisoformat(day).day] = s
+        plt.bar(people.keys(), people.values())
+        plt.savefig('chart.png')
+        p.image('chart.png')
+        printtext=''
 elif len(vcard) > 3:
     countDict[h]["unsuccessfulParse"] += 1
     printtext = "\n\n__________________________________\nName\n\n__________________________________\nTelefon\n\n__________________________________\nStrasse\n\n__________________________________\nOrt"
