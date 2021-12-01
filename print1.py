@@ -82,7 +82,7 @@ if vcard.startswith("stats"):
                 people[datetime.date.fromisoformat(day).day] = s
         plt.bar(people.keys(), people.values())
         plt.savefig('chart.png')
-        p.image('chart.png')
+        p.image("chart.png", 'false', 'false', 'bitImageColumn', 20000000)
 elif vcard.startswith("HC1:"):
     vac = verifyVac(vcard)
     if vac["valid"]:
@@ -92,7 +92,7 @@ elif vcard.startswith("HC1:"):
     else:
         printtext = vac["data"] + "\n\n__________________________________\nName\n\n__________________________________\nTelefon\n\n__________________________________\nStrasse\n\n__________________________________\nOrt"
         countDict[h]["unsuccessfulParse"] += 1
-elif (vctel == "") and (vcmail == ""):
+elif (vctel == "") and (vcmail == "") and (vcard != ""):
     printtext = "Es muss entweder eine Telefonnummer oder eine E-Mail Adresse angegeben werden.\n\n{}\n\n__________________________________\nTelefon\n\n{}".format(
         vcname, vcaddr)
     countDict[h]["unsuccessfulParse"] += 1
