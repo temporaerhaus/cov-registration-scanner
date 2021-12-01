@@ -71,7 +71,7 @@ if vcard.startswith("stats"):
                 s = 0
                 for i in (countDict[day]).values():
                     s += i
-                printtext += day + ": " + str(i) + "\n"
+                printtext += day + ": " + str(s) + "\n"
     if args.monthly:
         people = {}
         for day in countDict.keys():
