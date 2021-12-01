@@ -65,9 +65,9 @@ if vcard.startswith("stats"):
         printtext += json.dumps(countDict[h], sort_keys=True, indent=4)
     if args.weekly:
         printtext += ("\nKW: " +
-                      str(datetime.date.today().isocalendar().week) + "\n")
+                      str(datetime.date.today().isocalendar()[1]) + "\n")
         for day in countDict.keys():
-            if datetime.date.fromisoformat(day).isocalendar().week == datetime.date.today().isocalendar().week:
+            if datetime.date.fromisoformat(day).isocalendar()[1] == datetime.date.today().isocalendar()[1]:
                 s = 0
                 for i in (countDict[day]).values():
                     s += i
