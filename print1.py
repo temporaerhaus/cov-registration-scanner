@@ -8,7 +8,6 @@ import json
 import argparse
 # from escpos.constants import *
 from verifyVac import verify as verifyVac
-from matplotlib import pyplot as plt
 
 p = Serial('/dev/ttyUSB0', 19200)
 
@@ -44,25 +43,10 @@ now = datetime.datetime.now()
 p.set()                # reset font size
 p.text("\x1b\x61\x00")  # align left
 
-if (vctel == "") and (vcmail == ""):
-    printtext = "Es muss entweder eine Telefonnummer oder eine E-Mail Adresse angegeben werden.\n\n{}\n\n__________________________________\nTelefon\n\n{}".format(
-        vcname, vcaddr)
-    countDict[h]["unsuccessfulParse"] += 1
-elif (vcname != "") and (vcaddr != ""):
-    printtext = ("{0}\n{1}\n{3}" if (vctel == "") else ("{0}\n{2}\n{3}" if (
-        vcmail == "") else "{}\n{} {}\n{}")).format(vcname, vcmail, vctel, vcaddr)
-    countDict[h]["successfulParse"] += 1
-elif vcard.startswith("HC1:"):
-    vac = verifyVac(vcard)
-    if vac["valid"]:
-        printtext = vac["data"]["name"] + \
-            "\n\n__________________________________\nTelefon\n\n__________________________________\nStrasse\n\n__________________________________\nOrt"
-        countDict[h]["vacCertParse"] += 1
-    else:
-        printtext = vac["data"] + "\n\n__________________________________\nName\n\n__________________________________\nTelefon\n\n__________________________________\nStrasse\n\n__________________________________\nOrt"
-        countDict[h]["unsuccessfulParse"] += 1
-elif vcard == "stats":
+if vcard.startswith("stats"):
     printtext = ''
+    from matplotlib import pyplot as plt
+
     parser = argparse.ArgumentParser(
         description='decides, what and how many stats are printed')
     parser.add_argument(
@@ -99,7 +83,23 @@ elif vcard == "stats":
         plt.bar(people.keys(), people.values())
         plt.savefig('chart.png')
         p.image('chart.png')
-        printtext=''
+elif vcard.startswith("HC1:"):
+    vac = verifyVac(vcard)
+    if vac["valid"]:
+        printtext = vac["data"]["name"] + \
+            "\n\n__________________________________\nTelefon\n\n__________________________________\nStrasse\n\n__________________________________\nOrt"
+        countDict[h]["vacCertParse"] += 1
+    else:
+        printtext = vac["data"] + "\n\n__________________________________\nName\n\n__________________________________\nTelefon\n\n__________________________________\nStrasse\n\n__________________________________\nOrt"
+        countDict[h]["unsuccessfulParse"] += 1
+elif (vctel == "") and (vcmail == ""):
+    printtext = "Es muss entweder eine Telefonnummer oder eine E-Mail Adresse angegeben werden.\n\n{}\n\n__________________________________\nTelefon\n\n{}".format(
+        vcname, vcaddr)
+    countDict[h]["unsuccessfulParse"] += 1
+elif (vcname != "") and (vcaddr != ""):
+    printtext = ("{0}\n{1}\n{3}" if (vctel == "") else ("{0}\n{2}\n{3}" if (
+        vcmail == "") else "{}\n{} {}\n{}")).format(vcname, vcmail, vctel, vcaddr)
+    countDict[h]["successfulParse"] += 1
 elif len(vcard) > 3:
     countDict[h]["unsuccessfulParse"] += 1
     printtext = "\n\n__________________________________\nName\n\n__________________________________\nTelefon\n\n__________________________________\nStrasse\n\n__________________________________\nOrt"
